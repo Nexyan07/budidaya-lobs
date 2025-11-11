@@ -11,15 +11,17 @@
 <body class="bg-blue-50 min-h-screen text-gray-900">
 
     <div x-data="deviceControl" x-init="init()" class="p-4 sm:p-6">
+        <a href={{ route('dashboard') }}
+            class="inline-flex gap-2 items-center text-gray-800 hover:bg-blue-100 px-2 py-1 rounded-md transition-colors duration-300 mb-4 sm:mb-6">
+            <i data-lucide="chevron-left" class="size-7"></i>
+            <span>Kembali</span>
+        </a>
         <div class="bg-white rounded-2xl shadow-md overflow-hidden border border-gray-200">
             <!-- Header -->
             <div class="flex flex-col sm:flex-row justify-between gap-y-4 border-b border-gray-300 px-5 py-4 ">
-              <div class="flex gap-2 sm:gap-4 items-center">
-                  <button onclick="history.back()" class="flex gap-2 mt-1 hover:bg-gray-200 rounded-full p-1">
-                      <i data-lucide="chevron-left" class="size-5 text-blue-700"></i>
-                  </button>
+                <div class="flex gap-2 sm:gap-4 items-center">
                     <h1 class="text-xl font-semibold text-blue-700 flex items-center gap-2">
-                      Kontrol Manual Perangkat
+                        Kontrol Manual Perangkat
                     </h1>
                 </div>
                 <button @click="handleSchedule"

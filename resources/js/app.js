@@ -6,6 +6,10 @@ import Chart from 'chart.js/auto';
 window.Alpine = Alpine;
 window.Chart = Chart;
 
+document.addEventListener('DOMContentLoaded', () => {
+  createIcons({ icons })
+})
+
 document.addEventListener('alpine:init', () => {
   Alpine.data('dashboard', () => ({
     // Data sensor
@@ -26,18 +30,17 @@ document.addEventListener('alpine:init', () => {
       { date: "2025-11-06", temperature: 29.1, DO: 6.2, pH: 7.1, ammonia: 0.04, turbidity: 10 },
       { date: "2025-11-07", temperature: 27.9, DO: 5.9, pH: 7.4, ammonia: 0.03, turbidity: 11 },
     ],
-    filter: 'daily',
     alerts: [
       { id: 1, type: "DO_LOW", message: "Kadar DO rendah (<4 mg/L)", time: "09:12" },
       { id: 2, type: "pH_WARNING", message: "pH sedikit turun (6.8)", time: "08:50" },
     ],
+    filter: 'daily',
 
     init() {
       this.$nextTick(() => {
-
         createIcons({ icons });
         this.renderChart();
-      })
+      });
     },
 
     renderChart() {
