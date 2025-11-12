@@ -10,13 +10,13 @@
 
 <body class="bg-blue-50 min-h-screen text-gray-900">
 
-    <div x-data="deviceControl" x-init="init()" class="p-4 sm:p-6">
-        <a href={{ route('dashboard') }}
-            class="inline-flex gap-2 items-center text-gray-800 hover:bg-blue-100 px-2 py-1 rounded-md transition-colors duration-300 mb-4 sm:mb-6">
-            <i data-lucide="chevron-left" class="size-7"></i>
-            <span>Kembali</span>
-        </a>
-        <div class="bg-white rounded-2xl shadow-md overflow-hidden border border-gray-200">
+    <a href={{ route('dashboard') }}
+        class="inline-flex mt-4 gap-2 items-center text-gray-800 hover:bg-blue-100 px-2 py-1 rounded-md transition-colors duration-300 mb-4 sm:mb-6">
+        <i data-lucide="chevron-left" class="size-7"></i>
+        <span>Kembali</span>
+    </a>
+    <div x-data="deviceControl" x-init="init()" class="px-2 flex mx-auto justify-center">
+        <div class="bg-white w-[26rem] rounded-2xl shadow-md overflow-hidden border border-gray-200">
             <!-- Header -->
             <div class="flex flex-col sm:flex-row justify-between gap-y-4 border-b border-gray-300 px-5 py-4 ">
                 <div class="flex gap-2 sm:gap-4 items-center">
@@ -26,13 +26,14 @@
                 </div>
                 <button @click="handleSchedule"
                     class="bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center gap-2 px-4 py-2 rounded-lg">
-                    <i data-lucide="timer" class="w-4 h-4"></i> Atur Jadwal
+                    <i data-lucide="timer" class="w-4 h-4"></i> Jadwal
                 </button>
             </div>
 
             <!-- Kontrol Perangkat -->
-            <div class="p-5 space-y-4">
-                <template x-for="(device, key) in devices" :key="key">
+            <form class="p-5 space-y-4">
+                @csrf
+                @foreach ($devices as $device)
                     <div
                         class="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 bg-white rounded-2xl shadow-sm border border-gray-200">
                         <div class="w-full">
@@ -40,20 +41,26 @@
                                 <h3 class="font-semibold text-blue-700 text-lg flex items-center gap-2">
                                     <i :data-lucide="'power'" :class="device.active ? 'text-blue-600' : 'text-gray-400'"
                                         class="w-5 h-5"></i>
-                                    <span x-text="device.label"></span>
+                                    <span>{{ $device['name'] }}</span>
                                 </h3>
                                 <button @click="toggleDevice(key)"
-                                    class="relative w-12 h-6 flex items-center rounded-full transition"
-                                    :class="device.active ? 'bg-blue-600' : 'bg-gray-300'">
+                                    class="relative w-12 h-6 flex items-center rounded-full transition
+                                        @if ($device['status'] === "ON") bg-blue-600
+                                        @else bg-gray-300
+                                        @endif"
+                                    >
                                     <span
-                                        class="absolute left-1 w-4 h-4 bg-white rounded-full shadow transform transition"
-                                        :class="device.active ? 'translate-x-6' : 'translate-x-0'"></span>
+                                        class="absolute left-1 w-4 h-4 bg-white rounded-full shadow transform transition
+                                            @if ($device['status'] === "ON") translate-x-6
+                                            @else translate-x-0
+                                            @endif"
+                                    ></span>
                                 </button>
                             </div>
-                            <p class="text-sm text-gray-600" x-text="device.description"></p>
+                            <p class="text-sm text-gray-600">{{ $device['description'] }}</p>
                         </div>
                     </div>
-                </template>
+                @endforeach
 
                 <div class="pt-4 flex justify-end">
                     <button @click="saveSettings"
@@ -61,7 +68,7 @@
                         <i data-lucide="save" class="w-4 h-4"></i> Simpan Pengaturan
                     </button>
                 </div>
-            </div>
+            </form>
         </div>
     </div>
 

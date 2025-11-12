@@ -1,19 +1,17 @@
 <?php
 
+use App\Http\Controllers\DeviceController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SensorController;
 use Illuminate\Support\Facades\Route;
 
 // Route::get('/', function () {
 //     return view('welcome');
 // });
 
-Route::get('/', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/', [SensorController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::get('/control', function () {
-    return view('device-control');
-})->middleware(['auth', 'verified'])->name('control');
+Route::get('/control', [DeviceController::class, 'index'])->middleware(['auth', 'verified'])->name('control');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

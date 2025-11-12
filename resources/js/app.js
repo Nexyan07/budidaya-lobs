@@ -12,14 +12,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 document.addEventListener('alpine:init', () => {
   Alpine.data('dashboard', () => ({
-    // Data sensor
-    sensors: [
-      { icon: 'thermometer', label: 'Suhu', value: '27 °C', status: 'normal' },
-      { icon: 'droplets', label: 'DO', value: '5.9 mg/L', status: 'warning' },
-      { icon: 'activity', label: 'pH', value: '7.3', status: 'normal' },
-      { icon: 'beaker', label: 'Amonia', value: '0.03 mg/L', status: 'danger' },
-      { icon: 'cloud', label: 'Kekeruhan', value: '12 NTU', status: 'normal' },
-    ],
     devices: [
       { label: 'Aerator', active: true },
       { label: 'Pompa', active: false },

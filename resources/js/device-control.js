@@ -28,7 +28,7 @@ document.addEventListener("alpine:init", () => {
         },
 
         toggleDevice(key) {
-            this.devices[key].active = !this.devices[key].active;
+            this.devices[key].status = this.devices[key].status === "ON" ? "OFF" : "ON";
             this.$nextTick(() => createIcons({ icons, replace: true }));
         },
 
