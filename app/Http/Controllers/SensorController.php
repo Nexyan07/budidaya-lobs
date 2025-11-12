@@ -11,38 +11,73 @@ class SensorController extends Controller
     public function index()
     {
         $latest = SensorData::latest()->first();
-        $sensors = [
-            [
-                'icon' => 'thermometer',
-                'label' => 'suhu',
-                'value' => number_format($latest->suhu, 1) . " °C",
-                'status' => $this->status($latest->suhu, 'suhu')
-            ],
-            [
-                'icon' => 'droplets',
-                'label' => 'DO',
-                'value' => number_format($latest->do, 1) . " mg/L",
-                'status' => $this->status($latest->do, 'do')
-            ],
-            [
-                'icon' => 'activity',
-                'label' => 'pH',
-                'value' => number_format($latest->ph, 1),
-                'status' => $this->status($latest->ph, 'ph')
-            ],
-            [
-                'icon' => 'beaker',
-                'label' => 'amonia',
-                'value' => number_format($latest->amonia, 2) . " mg/L",
-                'status' => $this->status($latest->amonia, 'amonia')
-            ],
-            [
-                'icon' => 'cloud',
-                'label' => 'kekeruhan',
-                'value' => number_format($latest->kekeruhan, 0) . " NTU",
-                'status' => $this->status($latest->kekeruhan, 'kekeruhan')
-            ],
-        ];
+        if (isset($latest)) {
+            $sensors = [
+                [
+                    'icon' => 'thermometer',
+                    'label' => 'suhu',
+                    'value' => number_format($latest->suhu, 1) . " °C",
+                    'status' => $this->status($latest->suhu, 'suhu')
+                ],
+                [
+                    'icon' => 'droplets',
+                    'label' => 'DO',
+                    'value' => number_format($latest->do, 1) . " mg/L",
+                    'status' => $this->status($latest->do, 'do')
+                ],
+                [
+                    'icon' => 'activity',
+                    'label' => 'pH',
+                    'value' => number_format($latest->ph, 1),
+                    'status' => $this->status($latest->ph, 'ph')
+                ],
+                [
+                    'icon' => 'beaker',
+                    'label' => 'amonia',
+                    'value' => number_format($latest->amonia, 2) . " mg/L",
+                    'status' => $this->status($latest->amonia, 'amonia')
+                ],
+                [
+                    'icon' => 'cloud',
+                    'label' => 'kekeruhan',
+                    'value' => number_format($latest->kekeruhan, 0) . " NTU",
+                    'status' => $this->status($latest->kekeruhan, 'kekeruhan')
+                ],
+            ];
+        } else {
+            $sensors = [
+                [
+                    'icon' => 'thermometer',
+                    'label' => 'suhu',
+                    'value' => "0 °C",
+                    'status' => 'normal',
+                ],
+                [
+                    'icon' => 'droplets',
+                    'label' => 'DO',
+                    'value' => "0 mg/L",
+                    'status' => 'normal',
+                ],
+                [
+                    'icon' => 'activity',
+                    'label' => 'pH',
+                    'value' => '0',
+                    'status' => 'normal'
+                ],
+                [
+                    'icon' => 'beaker',
+                    'label' => 'amonia',
+                    'value' => "0 mg/L",
+                    'status' => 'normal'
+                ],
+                [
+                    'icon' => 'cloud',
+                    'label' => 'kekeruhan',
+                    'value' => "0 NTU",
+                    'status' => 'normal',
+                ],
+            ];
+        }
 
         $devices = Device::all();
         // $history = SensorData::orderBy('desc')->take(50)->get();
@@ -71,5 +106,18 @@ class SensorController extends Controller
             default:
                 return 'normal';
         }
+    }
+
+    public function store(Request $request)
+    {
+        SensorData::create([
+            'suhu' => $request->suhu,
+            'do' => $request->do,
+            'ph' => $request->ph,
+            'amonia' => $request->amonia,
+            'kekeruhan' => $request->kekeruhan,
+        ]);
+
+        return response()->json(['status' => "ok"]);
     }
 }

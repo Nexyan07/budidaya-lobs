@@ -30,14 +30,6 @@ class AdminUserSeeder extends Seeder
             ]);
         }
 
-        SensorData::create([
-            'suhu' => 0,
-            'do' => 0,
-            'ph' => 0,
-            'amonia' => 0,
-            'kekeruhan' => 0,
-        ]);
-
         Device::insert([
             [
                 'name' => 'Aerator',

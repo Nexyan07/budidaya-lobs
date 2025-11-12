@@ -11,31 +11,6 @@
 
         <!-- Sensor Cards -->
         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-6">
-            {{-- <template x-for="sensor in sensors" :key="sensor.label">
-                <div class="p-4 rounded-2xl shadow bg-white flex items-center gap-2 border-l-4"
-                    :class="{
-                        'border-blue-500': sensor.status === 'normal',
-                        'border-yellow-400': sensor.status === 'warning',
-                        'border-red-500': sensor.status === 'danger'
-                    }">
-                    <i :data-lucide="sensor.icon" class="w-6 h-6"
-                        :class="{
-                            'text-blue-600': sensor.status === 'normal',
-                            'text-yellow-500': sensor.status === 'warning',
-                            'text-red-600': sensor.status === 'danger'
-                        }"></i>
-                    <div class="">
-                        <div class="font-medium text-gray-800 text-sm" x-text="sensor.label"></div>
-                        <div class="text-lg font-semibold"
-                            :class="{
-                                'text-blue-600': sensor.status === 'normal',
-                                'text-yellow-500': sensor.status === 'warning',
-                                'text-red-600': sensor.status === 'danger'
-                            }"
-                            x-text="sensor.value"></div>
-                    </div>
-                </div>
-            </template> --}}
             @foreach ($sensors as $sensor)
                 <div
                     class="p-4 rounded-2xl shadow bg-white flex items-center gap-2 border-l-4
@@ -81,15 +56,6 @@
             <!-- Kartu Status Perangkat -->
             <div class="bg-white p-5 rounded-2xl shadow-md">
                 <h2 class="text-lg font-semibold text-blue-600 mb-4">Status Perangkat</h2>
-
-                {{-- <template x-for="device in devices" :key="device.label">
-                    <div class="flex justify-between items-center px-3 py-2 border rounded-xl mb-2 bg-gray-50">
-                        <span class="font-medium text-gray-800" x-text="device.label"></span>
-                        <span class="px-3 py-1 text-xs font-semibold rounded-full"
-                            :class="device.active ? 'bg-blue-100 text-blue-700' : 'bg-gray-200 text-gray-500'"
-                            x-text="device.active ? 'ON' : 'OFF'"></span>
-                    </div>
-                </template> --}}
 
                 @foreach ($devices as $device)
                     <div class="flex justify-between items-center px-3 py-2 border rounded-xl mb-2 bg-gray-50">

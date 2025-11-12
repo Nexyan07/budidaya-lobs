@@ -129,6 +129,30 @@ document.addEventListener('alpine:init', () => {
       alert(`Export data ${this.filter} ke Excel...`);
     }
   }));
+
+  Alpine.data("deviceControl", () => ({
+
+        init() {
+            this.$nextTick(() => createIcons({ icons, replace: true }));
+        },
+
+        toggleDevice(key) {
+            this.devices[key].status = this.devices[key].status === "ON" ? "OFF" : "ON";
+            this.$nextTick(() => createIcons({ icons, replace: true }));
+        },
+
+        handleSchedule() {
+            alert("Atur jadwal perangkat (fitur dalam pengembangan)...");
+        },
+
+        saveSettings() {
+            const result = Object.entries(this.devices)
+                .map(([key, dev]) => `${dev.label}: ${dev.active ? "ON" : "OFF"}`)
+                .join("\n");
+
+            alert(`Pengaturan disimpan:\n${result}`);
+        },
+    }));
 });
 
 Alpine.start();
