@@ -93,7 +93,7 @@
         </div> --}}
 
         <!-- Responsive Settings Options -->
-        <div class="pt-4 pb-1 border-t border-gray-200">
+        <div class="pt-4 border-t border-gray-200">
             <div class="px-4 flex items-center gap-2 text-gray-800">
                 <i data-lucide="circle-user" class="size-7"></i>
                 <div>
@@ -102,7 +102,7 @@
                 </div>
             </div>
 
-            <div class="mt-3 space-y-1">
+            <div class="mt-3 space-y-1 border-b border-gray-300 shadow-md">
                 <x-responsive-nav-link :href="route('profile.edit')">
                     {{ __('Profile') }}
                 </x-responsive-nav-link>

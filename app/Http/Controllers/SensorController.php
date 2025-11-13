@@ -80,9 +80,9 @@ class SensorController extends Controller
         }
 
         $devices = Device::all();
-        // $history = SensorData::orderBy('desc')->take(50)->get();
+        $history = SensorData::latest()->take(50)->get();
 
-        return view('dashboard', compact('sensors', 'devices'));
+        return view('dashboard', compact('sensors', 'devices', 'history'));
     }
 
     private function status($value, $type)

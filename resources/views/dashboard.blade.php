@@ -7,7 +7,6 @@
     </x-slot>
 
     <div class="bg-blue-50 px-2 md:px-4 lg:px-6 min-h-screen" x-data="dashboard()" x-init="init()">
-        {{-- <h1 class="text-2xl font-bold text-blue-700 mb-6">Dashboard Kualitas Air</h1> --}}
 
         <!-- Sensor Cards -->
         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-6">
@@ -68,10 +67,12 @@
                     </div>
                 @endforeach
 
-                <a href="/control"
-                    class="block text-center w-full bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg py-2 mt-3">
-                    Kontrol Manual
-                </a>
+                @if (Auth::check() && Auth::user()->role === 'Admin')
+                    <a href="/control"
+                        class="block text-center w-full bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg py-2 mt-3">
+                        Kontrol Manual
+                    </a>
+                @endif
             </div>
         </div>
 
@@ -127,7 +128,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <template x-for="(row, index) in dataHistory" :key="index">
+                        {{-- <template x-for="(row, index) in dataHistory" :key="index">
                             <tr class="even:bg-blue-50">
                                 <td class="py-2 px-4 font-medium text-gray-800" x-text="row.date"></td>
                                 <td class="py-2 px-4 text-gray-700" x-text="row.temperature"></td>
@@ -136,7 +137,21 @@
                                 <td class="py-2 px-4 text-gray-700" x-text="row.ammonia"></td>
                                 <td class="py-2 px-4 text-gray-700" x-text="row.turbidity"></td>
                             </tr>
-                        </template>
+                        </template> --}}
+                        @forelse ($history as $h)
+                            <tr class="even:bg-blue-50">
+                                <td class="py-2 px-4 font-medium text-gray-800">{{ $h->created_at->toDateString() }}</td>
+                                <td class="py-2 px-4 text-gray-700">{{ $h['suhu'] }}</td>
+                                <td class="py-2 px-4 text-gray-700">{{ $h['do'] }}</td>
+                                <td class="py-2 px-4 text-gray-700">{{ $h['ph'] }}</td>
+                                <td class="py-2 px-4 text-gray-700">{{ $h['amonia'] }}</td>
+                                <td class="py-2 px-4 text-gray-700">{{ $h['kekeruhan'] }}</td>
+                            </tr>
+                        @empty
+                            <tr class="bg-white">
+                                <td class="text-gray-700 font-semibold text-xl text-center" height="86px" colspan="6">Belum ada data</td>
+                            </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>

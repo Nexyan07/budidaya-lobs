@@ -130,10 +130,11 @@ document.addEventListener('alpine:init', () => {
     }
   }));
 
-  Alpine.data("deviceControl", () => ({
+  Alpine.data("deviceControl", (initialDevices) => ({
+        devices: initialDevices,
 
         init() {
-            this.$nextTick(() => createIcons({ icons, replace: true }));
+            this.$nextTick(() => createIcons({ icons }));
         },
 
         toggleDevice(key) {

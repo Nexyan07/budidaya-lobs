@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Device;
 use Illuminate\Http\Request;
 use PhpMqtt\Client\ConnectionSettings;
+use PhpMqtt\Client\Exceptions\MqttClientException;
 use PhpMqtt\Client\MqttClient;
+use Illuminate\Support\Facades\Log;
 
 class DeviceController extends Controller
 {
@@ -15,10 +17,9 @@ class DeviceController extends Controller
         return view('device-control', compact('devices'));
     }
 
-    public function toggle(Device $device)
+    public function updateBulk(Request $request)
     {
-        $newStatus = $device->status === "ON" ? "OFF" : "ON";
-        $device->update(['status' => $newStatus]);
+        $devicesInput = $request->input('devices');
 
         $server = '7db03374f5cf40628db4587fa2a91962.s1.eu.hivemq.cloud';
         $port = 8883;
@@ -26,25 +27,40 @@ class DeviceController extends Controller
         $username = 'nexdev';
         $password = 'nexYan1234';
 
-        $mqtt = new MqttClient($server, $port, $clientId);
+        try {
+            $mqtt = new MqttClient($server, $port, $clientId);
 
-        $settings = (new ConnectionSettings)
-            ->setUsername($username)
-            ->setPassword($password)
-            ->setKeepAliveInterval(60)
-            ->setLastWillTopic('kolam/lobster/lastwill')
-            ->setLastWillMessage('Client disconnected unexpectedly')
-            ->setLastWillQualityOfService(1);
+            $settings = (new ConnectionSettings)
+                ->setUsername($username)
+                ->setPassword($password)
+                ->setKeepAliveInterval(60)
+                ->setLastWillTopic('kolam/lobster/lastwill')
+                ->setLastWillMessage('Client disconnected unexpectedly')
+                ->setLastWillQualityOfService(1)
+                ->setUseTls(true);
 
-        $mqtt->connect($settings, true);
+            $mqtt->connect($settings, true);
 
-        // Publish perintah ON/OFF
-        $topic = "kolam/lobster/control/{$device->name}";
-        $payload = json_encode(['status' => $newStatus]);
+            foreach ($devicesInput as $deviceId => $status) {
+                $device = Device::find($deviceId);
+                if (!$device) continue;
 
-        $mqtt->publish($topic, $payload, 0);
+                $device->status = $status;
+                $device->save();
 
-        // Tutup koneksi
-        $mqtt->disconnect();
+                // Publish perintah ON/OFF
+                $topic = "kolam/lobster/control/{$device->name}";
+                $payload = json_encode(['status' => $status]);
+
+                $mqtt->publish($topic, $payload, 0);
+            }
+
+            // Tutup koneksi
+            $mqtt->disconnect();
+
+            return redirect()->back()->with("message", "Berhasil");
+        } catch (MqttClientException $e) {
+            Log::error("MQTT publish failed : " . $e->getMessage());
+        }
     }
 }
