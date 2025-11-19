@@ -5,23 +5,15 @@ import Chart from 'chart.js/auto';
 
 window.Alpine = Alpine;
 window.Chart = Chart;
+window.createIcons = createIcons
+window.lucideIcons = icons
 
 document.addEventListener('DOMContentLoaded', () => {
   createIcons({ icons })
 })
 
 document.addEventListener('alpine:init', () => {
-  Alpine.data('dashboard', () => ({
-    devices: [
-      { label: 'Aerator', active: true },
-      { label: 'Pompa', active: false },
-      { label: 'Feeder', active: true },
-    ],
-    dataHistory: [
-      { date: "2025-11-05", temperature: 28.4, DO: 5.8, pH: 7.3, ammonia: 0.02, turbidity: 12 },
-      { date: "2025-11-06", temperature: 29.1, DO: 6.2, pH: 7.1, ammonia: 0.04, turbidity: 10 },
-      { date: "2025-11-07", temperature: 27.9, DO: 5.9, pH: 7.4, ammonia: 0.03, turbidity: 11 },
-    ],
+  Alpine.data('dashboard', (population) => ({
     alerts: [
       { id: 1, type: "DO_LOW", message: "Kadar DO rendah (<4 mg/L)", time: "09:12" },
       { id: 2, type: "pH_WARNING", message: "pH sedikit turun (6.8)", time: "08:50" },
@@ -40,8 +32,9 @@ document.addEventListener('alpine:init', () => {
       if (!ctx) return;
 
       // Data contoh biomassa per hari
-      const labels = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'];
-      const data = [1.4, 1.5, 1.6, 1.7, 1.72, 1.78, 1.82];
+      const labels = population.map(p => new Date(p.waktu).toLocaleDateString('id-ID', { day: '2-digit', month: 'short' })).reverse();
+      const data = population.map(p => p.biomassa).reverse()
+      console.log(data)
 
       new Chart(ctx, {
         type: 'line',
@@ -124,36 +117,93 @@ document.addEventListener('alpine:init', () => {
         }
       });
     },
-
-    handleExport() {
-      alert(`Export data ${this.filter} ke Excel...`);
-    }
   }));
 
   Alpine.data("deviceControl", (initialDevices) => ({
-        devices: initialDevices,
+    devices: initialDevices,
 
-        init() {
-            this.$nextTick(() => createIcons({ icons }));
-        },
+    init() {
+      this.$nextTick(() => createIcons({ icons }));
+    },
 
-        toggleDevice(key) {
-            this.devices[key].status = this.devices[key].status === "ON" ? "OFF" : "ON";
-            this.$nextTick(() => createIcons({ icons, replace: true }));
-        },
+    toggleDevice(key) {
+      this.devices[key].status = this.devices[key].status === "ON" ? "OFF" : "ON";
+      this.$nextTick(() => createIcons({ icons, replace: true }));
+    },
 
-        handleSchedule() {
-            alert("Atur jadwal perangkat (fitur dalam pengembangan)...");
-        },
+    handleSchedule() {
+      alert("Atur jadwal perangkat (fitur dalam pengembangan)...");
+    },
 
-        saveSettings() {
-            const result = Object.entries(this.devices)
-                .map(([key, dev]) => `${dev.label}: ${dev.active ? "ON" : "OFF"}`)
-                .join("\n");
+    saveSettings() {
+      const result = Object.entries(this.devices)
+        .map(([key, dev]) => `${dev.label}: ${dev.active ? "ON" : "OFF"}`)
+        .join("\n");
 
-            alert(`Pengaturan disimpan:\n${result}`);
-        },
-    }));
+      alert(`Pengaturan disimpan:\n${result}`);
+    },
+  }));
+
+  Alpine.data('historyViewer', () => ({
+    histories: [],
+    level: 'month',
+    parent: null,
+    stack: [],
+
+    async init() {
+      this.histories = window.historyData || []
+      this.level = window.historyLevel || 'month'
+    },
+
+    async loadNext(waktu) {
+      try {
+        this.stack.push({
+          level:this.level,
+          parent: this.parent,
+        })
+        let nextLevel = this.level
+        if (this.level === 'month') nextLevel = 'day'
+        else if (this.level === 'day') nextLevel = 'hour'
+
+        const res = await fetch(`/show-histories?level=${nextLevel}&parent=${waktu}`)
+        if (!res.ok) throw new Error(`HTTP ${res.status}`)
+
+        const json = await res.json()
+        this.histories = json.histories
+        this.level = nextLevel      // ubah ke level berikutnya
+        this.parent = waktu         // parent adalah yang diklik
+      } catch (err) {
+        console.error('Gagal load data:', err)
+      }
+    },
+
+    async goBack() {
+      if (this.stack.length === 0) return;
+
+      // Ambil state terakhir
+      const prev = this.stack.pop();
+
+      const res = await fetch(`/show-histories?level=${prev.level}&parent=${prev.parent}`);
+      const json = await res.json();
+
+      this.histories = json.histories;
+      this.level = prev.level;
+      this.parent = prev.parent;
+    },
+
+    formatLabel(waktu) {
+      if (this.level === 'month') {
+        const [y, m] = waktu.split('-')
+        const monthNames = [
+          'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+          'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+        ]
+        return monthNames[parseInt(m) - 1] + ' ' + y
+      }
+      return waktu
+    }
+  }))
+
 });
 
 Alpine.start();

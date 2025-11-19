@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Device;
+use App\Models\Population;
 use Illuminate\Http\Request;
 use PhpMqtt\Client\ConnectionSettings;
 use PhpMqtt\Client\Exceptions\MqttClientException;
@@ -14,7 +15,8 @@ class DeviceController extends Controller
     public function index()
     {
         $devices = Device::all();
-        return view('device-control', compact('devices'));
+        $population = Population::orderBy('waktu', 'desc')->get();
+        return view('device-control', compact('devices', 'population'));
     }
 
     public function updateBulk(Request $request)

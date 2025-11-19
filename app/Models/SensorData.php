@@ -13,4 +13,6 @@ class SensorData extends Model
         'amonia',
         'kekeruhan',
     ];
+
+    
 }

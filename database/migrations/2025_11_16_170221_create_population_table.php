@@ -11,12 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('alerts', function (Blueprint $table) {
+        Schema::create('populations', function (Blueprint $table) {
             $table->id();
-            $table->string('type');
-            $table->string('message');
-            $table->float('value')->nullable();
-            $table->boolean('is_sent')->default(false);
+            $table->integer('quantity');
+            $table->float('biomassa', 8, 2);
+            $table->date('waktu');
             $table->timestamps();
         });
     }
@@ -26,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('alerts');
+        Schema::dropIfExists('population');
     }
 };
